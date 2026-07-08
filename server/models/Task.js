@@ -1,15 +1,19 @@
-﻿const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const taskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
+      required: true,
     },
     description: {
       type: String,
+      required: true,
     },
     status: {
       type: String,
       enum: ['Open', 'Claimed', 'Submitted', 'Approved', 'Rejected'],
+      default: 'Open',
+      required: true,
     },
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,

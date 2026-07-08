@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { createTask, fetchTalents } from '../../api/tasks';
 
 const STATUS_OPTIONS = ['Open', 'Claimed', 'Submitted', 'Approved', 'Rejected'];
@@ -8,6 +8,7 @@ const labelCls  = 'text-[11px] font-semibold uppercase tracking-[0.5px] text-tex
 
 const CreateTaskModal = ({ onClose, onCreated }) => {
   const [form, setForm] = useState({ title: '', description: '', status: 'Open', assignedTo: '', dueDate: '' });
+  const [error, setError] = useState('');
   const [talents, setTalents] = useState([]);
   const [loadingTalents, setLoadingTalents] = useState(false);
   useState(() => {
@@ -22,12 +23,13 @@ const CreateTaskModal = ({ onClose, onCreated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
       const { data } = await createTask({ ...form, assignedTo: form.assignedTo || undefined });
       onCreated(data);
       onClose();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to create task');
+      setError(err.response?.data?.message || 'Failed to create task');
     }
   };
 
@@ -46,16 +48,22 @@ const CreateTaskModal = ({ onClose, onCreated }) => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-[18px]">
+          {error && (
+            <div className="bg-danger/10 border border-danger/30 text-danger text-sm px-4 py-3 rounded-lg font-medium flex items-start gap-2">
+              <span className="text-base leading-none">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
           <div className="flex flex-col gap-1.5">
             <label className={labelCls}>Title</label>
             
-            <input name="title" value={form.title} onChange={handleChange}
+            <input name="title" value={form.title} onChange={handleChange} required
               placeholder="e.g. Design landing page mockup" className={inputCls} />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <label className={labelCls}>Description</label>
-            <textarea name="description" value={form.description} onChange={handleChange}
+            <textarea name="description" value={form.description} onChange={handleChange} required
               rows={3} placeholder="Describe the task deliverables..." className={inputCls} />
           </div>
 
