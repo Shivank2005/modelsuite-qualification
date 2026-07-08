@@ -1,5 +1,3 @@
-import React from 'react';
-
 const DueBadge = ({ dueDate, status }) => {
   if (!dueDate) return null;
   // If task is completed/submitted, no urgency needed
