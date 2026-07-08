@@ -1,9 +1,10 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { submitTask } from '../../api/submissions';
 
 const SubmitTaskModal = ({ task, onClose, onSubmitted }) => {
   const [file, setFile]   = useState(null);
   const [notes, setNotes] = useState('');
+  const [error, setError] = useState('');
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -11,6 +12,7 @@ const SubmitTaskModal = ({ task, onClose, onSubmitted }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     const formData = new FormData();
     if (file) formData.append('file', file);
     formData.append('notes', notes);
@@ -19,9 +21,10 @@ const SubmitTaskModal = ({ task, onClose, onSubmitted }) => {
       onSubmitted();
       onClose();
     } catch (err) {
-      alert(err.response?.data?.message || 'Submission failed');
+      setError(err.response?.data?.message || 'Submission failed');
     }
   };
+
 
   return (
     <div className="fixed inset-0 bg-black/65 backdrop-blur-sm flex items-center justify-center z-[200] p-6"
@@ -46,6 +49,12 @@ const SubmitTaskModal = ({ task, onClose, onSubmitted }) => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
+          {error && (
+            <div className="bg-danger/10 border border-danger/30 text-danger text-sm px-4 py-3 rounded-lg font-medium flex items-start gap-2">
+              <span className="text-base leading-none">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
 
           {/* File upload */}
           <div className="flex flex-col gap-1.5">
@@ -53,7 +62,7 @@ const SubmitTaskModal = ({ task, onClose, onSubmitted }) => {
               Upload File
             </label>
             
-            <input id="sub-file" type="file" onChange={handleFileChange} className="file-input-hidden" />
+            <input id="sub-file" type="file" onChange={handleFileChange} accept=".pdf, image/*" className="file-input-hidden" />
             <label htmlFor="sub-file"
               className="flex flex-col items-center justify-center gap-2 py-7 px-4 bg-bg-input border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary hover:bg-primary/5 transition-all text-center">
               {file ? (

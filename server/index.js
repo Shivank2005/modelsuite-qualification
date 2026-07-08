@@ -1,4 +1,4 @@
-﻿require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
@@ -26,6 +26,18 @@ app.use('/api/submissions', submissionRoutes);
 
 // Health check
 app.get('/', (req, res) => res.send('Task Pipeline API is running...'));
+
+// Global Error Handler for file uploads and other errors
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  if (err.message === 'Invalid file type. Only PDF and image files are allowed.') {
+    return res.status(400).json({ message: err.message });
+  }
+  if (err.name === 'MulterError') {
+    return res.status(400).json({ message: err.message });
+  }
+  res.status(500).json({ message: err.message || 'Server Error' });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

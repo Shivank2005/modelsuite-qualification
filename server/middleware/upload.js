@@ -1,4 +1,4 @@
-﻿const multer = require('multer');
+const multer = require('multer');
 const path = require('path');
 
 // Store files locally on disk
@@ -12,6 +12,16 @@ const storage = multer.diskStorage({
     cb(null, unique + path.extname(file.originalname));
   },
 });
-const upload = multer({ storage });
+const upload = multer({ 
+  storage,
+  fileFilter: function (req, file, cb) {
+    const allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only PDF and image files are allowed.'));
+    }
+  }
+});
 
 module.exports = upload;
