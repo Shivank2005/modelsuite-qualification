@@ -1,4 +1,5 @@
 import { deleteTask } from '../../api/tasks';
+import DueBadge from '../DueBadge';
 
 /* ── SVG Action Icons ── */
 const IconEdit = () => (
@@ -127,7 +128,10 @@ const TasksTable = ({ tasks, onEdit, onRefresh }) => {
 
               {/* Due date */}
               <td className="table-td" style={{ color: '#6B7280', whiteSpace: 'nowrap' }}>
-                {fmtDate(task.dueDate)}
+                <div className="flex items-center">
+                  {fmtDate(task.dueDate)}
+                  <DueBadge dueDate={task.dueDate} status={task.status} />
+                </div>
               </td>
 
               {/* Created */}
